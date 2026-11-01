@@ -1,0 +1,46 @@
+services:
+  app:
+    build: .
+    image: pool-service-system-app
+    restart: unless-stopped
+    ports:
+      - "${APP_PORT:-8000}:80"
+    env_file:
+      - .env
+    environment:
+      APP_URL: "http://localhost:${APP_PORT:-8000}"
+      DB_CONNECTION: mysql
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_DATABASE: poolservice
+      DB_USERNAME: poolservice
+      DB_PASSWORD: "${DOCKER_DB_PASSWORD:-poolservice_secret}"
+    volumes:
+      - app_storage:/var/www/html/storage
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: mysql:8.4
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: poolservice
+      MYSQL_USER: poolservice
+      MYSQL_PASSWORD: "${DOCKER_DB_PASSWORD:-poolservice_secret}"
+      MYSQL_ROOT_PASSWORD: "${DOCKER_DB_ROOT_PASSWORD:-root_secret}"
+    ports:
+      # 3307 on the host so it does not clash with a locally installed MySQL.
+      - "${DOCKER_DB_PORT:-3307}:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -u root -p$$MYSQL_ROOT_PASSWORD --silent"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 20s
+
+volumes:
+  app_storage:
+  db_data:
