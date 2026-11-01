@@ -33,7 +33,7 @@ class ActivityLog extends Model
     ];
 
     protected $fillable = [
-        'user_id', 'user_name', 'action', 'subject_type', 'subject_id', 'subject_label',
+        'company_id', 'user_id', 'user_name', 'action', 'subject_type', 'subject_id', 'subject_label',
         'description', 'changes', 'reason', 'ip_address',
     ];
 
@@ -51,14 +51,17 @@ class ActivityLog extends Model
 
     /**
      * Write one line. $subject is the record acted on; $label names it when there is no record (a failed login).
+     * The line belongs to the company of whoever did it, or else of the record itself.
      */
-    public static function record(string $action, ?Model $subject = null, ?array $changes = null, ?string $reason = null, ?string $label = null, ?User $user = null): self
+    public static function record(string $action, ?Model $subject = null, ?array $changes = null, ?string $reason = null, ?string $label = null, ?User $user = null, ?int $companyId = null): self
     {
         $user ??= Auth::user();
         $label ??= $subject && method_exists($subject, 'activityLabel') ? $subject->activityLabel() : null;
         $kind = $subject ? Str::of(class_basename($subject))->snake(' ')->toString() : null;
+        $companyId ??= $user?->company_id ?? ($subject instanceof Company ? $subject->getKey() : $subject?->company_id);
 
         return static::create([
+            'company_id' => $companyId,
             'user_id' => $user?->id,
             'user_name' => $user?->name,
             'action' => $action,
@@ -89,6 +92,11 @@ class ActivityLog extends Model
     public function getActionIconAttribute(): string
     {
         return self::ACTIONS[$this->action][2] ?? 'mdi-circle-small';
+    }
+
+    public function scopeForCompany(Builder $query, ?int $companyId): Builder
+    {
+        return $query->where('company_id', $companyId);
     }
 
     public function scopeFilter(Builder $query, array $filters): Builder

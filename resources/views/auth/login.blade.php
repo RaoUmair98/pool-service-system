@@ -44,4 +44,11 @@
             </x-primary-button>
         </div>
     </form>
+
+    @if (Route::has('register'))
+        <p class="mt-6 text-center text-sm text-gray-600">
+            {{ __('New pool service business?') }}
+            <a class="underline font-semibold text-gray-800 hover:text-gray-900" href="{{ route('register') }}">{{ __('Register your company') }}</a>
+        </p>
+    @endif
 </x-guest-layout>

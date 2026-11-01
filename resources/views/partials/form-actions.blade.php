@@ -1,11 +1,12 @@
-{{-- Status switch and buttons shared by every master form. Expects $model and $cancel; $saveAndNew adds a second save button. --}}
+{{-- Status switch and buttons shared by every master form. Expects $model and $cancel; $saveAndNew adds a second save button,
+     $activeHint replaces the text under the switch and $lockActive shows the switch without letting it change. --}}
 <div class="form-group">
     <div class="custom-control custom-switch">
         <input type="checkbox" class="custom-control-input" id="is_active" name="is_active" value="1"
-            @checked(old('is_active', $model->is_active))>
+            @checked(old('is_active', $model->is_active)) @disabled($lockActive ?? false)>
         <label class="custom-control-label" for="is_active">Active</label>
     </div>
-    <small class="form-text text-muted">Turn this off to hide it from new entries. Old records and history stay safe.</small>
+    <small class="form-text text-muted">{{ $activeHint ?? 'Turn this off to hide it from new entries. Old records and history stay safe.' }}</small>
 </div>
 
 <button type="submit" class="btn btn-primary waves-effect waves-light"><i class="mdi mdi-content-save"></i> Save</button>

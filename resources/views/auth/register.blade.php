@@ -1,11 +1,28 @@
 <x-guest-layout>
+    <h2 class="text-lg font-semibold text-gray-800">{{ __('Register your company') }}</h2>
+    <p class="text-sm text-gray-600 mb-4">{{ __('You will be the admin. Add your technicians after signing in.') }}</p>
+
     <form method="POST" action="{{ route('register') }}">
         @csrf
 
-        <!-- Name -->
+        <!-- Company Name -->
         <div>
-            <x-input-label for="name" :value="__('Name')" />
-            <x-text-input id="name" class="block mt-1 w-full" type="text" name="name" :value="old('name')" required autofocus autocomplete="name" />
+            <x-input-label for="company_name" :value="__('Company Name')" />
+            <x-text-input id="company_name" class="block mt-1 w-full" type="text" name="company_name" :value="old('company_name')" required autofocus autocomplete="organization" />
+            <x-input-error :messages="$errors->get('company_name')" class="mt-2" />
+        </div>
+
+        <!-- Company Phone -->
+        <div class="mt-4">
+            <x-input-label for="company_phone" :value="__('Company Phone (optional)')" />
+            <x-text-input id="company_phone" class="block mt-1 w-full" type="tel" name="company_phone" :value="old('company_phone')" autocomplete="tel" />
+            <x-input-error :messages="$errors->get('company_phone')" class="mt-2" />
+        </div>
+
+        <!-- Name -->
+        <div class="mt-4">
+            <x-input-label for="name" :value="__('Your Name')" />
+            <x-text-input id="name" class="block mt-1 w-full" type="text" name="name" :value="old('name')" required autocomplete="name" />
             <x-input-error :messages="$errors->get('name')" class="mt-2" />
         </div>
 
@@ -45,7 +62,7 @@
             </a>
 
             <x-primary-button class="ms-4">
-                {{ __('Register') }}
+                {{ __('Create Account') }}
             </x-primary-button>
         </div>
     </form>

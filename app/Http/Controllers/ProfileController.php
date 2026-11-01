@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProfileUpdateRequest;
+use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -47,6 +48,15 @@ class ProfileController extends Controller
         ]);
 
         $user = $request->user();
+
+        // The company must keep at least one admin who can log in.
+        $otherAdmins = $user->company?->users()->whereKeyNot($user->getKey())->active()->role(User::ROLE_ADMIN)->exists();
+
+        if ($user->isAdmin() && ! $otherAdmins) {
+            return Redirect::route('profile.edit')->withErrors([
+                'password' => __('You are the only admin of your company. Add another admin from Team before deleting your account.'),
+            ], 'userDeletion');
+        }
 
         Auth::logout();
 

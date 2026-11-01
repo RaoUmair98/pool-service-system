@@ -13,7 +13,10 @@ class ActivityLogController extends Controller
 {
     public function index(Request $request)
     {
+        $companyId = $request->user()->company_id;
+
         $logs = ActivityLog::query()
+            ->forCompany($companyId)
             ->with('user')
             ->filter($request->only(['search', 'user_id', 'action', 'group', 'date_from', 'date_to']))
             ->latest()
@@ -23,7 +26,7 @@ class ActivityLogController extends Controller
 
         return view('activity.index', [
             'logs' => $logs,
-            'users' => User::orderBy('name')->get(['id', 'name']),
+            'users' => User::where('company_id', $companyId)->orderBy('name')->get(['id', 'name']),
         ]);
     }
 }

@@ -1,6 +1,6 @@
 /*
- * Bismillah Paints look and feel, layered on top of the Minton theme.
- * Loaded by layouts/stock.blade.php on every stock screen.
+ * App look and feel, layered on top of the Minton theme.
+ * Loaded by layouts/admin.blade.php on every screen.
  */
 
 :root {

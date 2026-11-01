@@ -1,9 +1,21 @@
-{{-- Search + status bar for the master lists. Optional: $placeholder. --}}
+{{-- Search + status bar for the master lists. Optional: $placeholder, $roles (value => label). --}}
 <form method="GET" class="form-row align-items-end mb-3">
     <div class="col-md-3 mb-2">
         <label class="mb-1"><i class="mdi mdi-magnify"></i> Search</label>
         <input type="text" name="search" value="{{ request('search') }}" class="form-control" placeholder="{{ $placeholder ?? 'Search by name' }}">
     </div>
+
+    @isset($roles)
+        <div class="col-md-2 mb-2">
+            <label class="mb-1"><i class="mdi mdi-shield-account-outline"></i> Role</label>
+            <select name="role" class="form-control">
+                <option value="">All roles</option>
+                @foreach ($roles as $value => $label)
+                    <option value="{{ $value }}" @selected(request('role') === $value)>{{ $label }}</option>
+                @endforeach
+            </select>
+        </div>
+    @endisset
 
     <div class="col-md-2 mb-2">
         <label class="mb-1"><i class="mdi mdi-toggle-switch-outline"></i> Status</label>

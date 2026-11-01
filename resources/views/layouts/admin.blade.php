@@ -72,6 +72,28 @@
 
                             {{-- Pool service sections (customers, pools, jobs, reports...) are added here as they are built. --}}
 
+                            @canany(['manage team', 'manage company'])
+                            <li class="menu-title">Company</li>
+                            @endcanany
+
+                            @can('manage team')
+                            <li>
+                                <a href="{{ route('team.index') }}" class="waves-effect">
+                                    <i class="mdi mdi-account-group-outline"></i>
+                                    <span> Team </span>
+                                </a>
+                            </li>
+                            @endcan
+
+                            @can('manage company')
+                            <li>
+                                <a href="{{ route('company.edit') }}" class="waves-effect">
+                                    <i class="mdi mdi-domain"></i>
+                                    <span> Company Settings </span>
+                                </a>
+                            </li>
+                            @endcan
+
                             @can('view activity log')
                             <li>
                                 <a href="{{ route('activity.index') }}" class="waves-effect">
@@ -123,7 +145,8 @@
                                     <div class="dropdown-menu dropdown-menu-right profile-dropdown ">
                                         <!-- item-->
                                         <div class="dropdown-header noti-title">
-                                            <h6 class="text-overflow m-0">Welcome !</h6>
+                                            <h6 class="text-overflow m-0">{{ auth()->user()->company?->name }}</h6>
+                                            <small class="text-muted">{{ auth()->user()->role_label }}</small>
                                         </div>
 
                                         <!-- item-->
@@ -184,6 +207,8 @@
                                         // Page icon follows the section of the app the current route belongs to.
                                         $pageIcon = collect([
                                             'dashboard' => 'mdi-view-dashboard-outline',
+                                            'team.' => 'mdi-account-group-outline',
+                                            'company.' => 'mdi-domain',
                                             'activity.' => 'mdi-clipboard-text-outline',
                                         ])->first(fn ($icon, $prefix) => str_starts_with((string) request()->route()?->getName(), $prefix));
                                     @endphp

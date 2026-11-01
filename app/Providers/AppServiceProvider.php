@@ -32,7 +32,8 @@ class AppServiceProvider extends ServiceProvider
             }
         });
         Event::listen(Failed::class, function (Failed $event) {
-            ActivityLog::record('login_failed', label: (string) ($event->credentials['email'] ?? 'unknown'), reason: 'Wrong email or password');
+            // When the email matched an account, its company gets to see the failed attempt.
+            ActivityLog::record('login_failed', label: (string) ($event->credentials['email'] ?? 'unknown'), reason: 'Wrong email or password', companyId: $event->user?->company_id);
         });
     }
 }
