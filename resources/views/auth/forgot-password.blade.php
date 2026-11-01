@@ -1,25 +1,22 @@
-<x-guest-layout>
-    <div class="mb-4 text-sm text-gray-600">
-        {{ __('Forgot your password? No problem. Just let us know your email address and we will email you a password reset link that will allow you to choose a new one.') }}
-    </div>
+@extends('layouts.guest')
 
-    <!-- Session Status -->
-    <x-auth-session-status class="mb-4" :status="session('status')" />
+@section('title', 'Forgot password')
+
+@section('content')
+    <h4 class="mb-1">Forgot your password?</h4>
+    <p class="text-muted mb-3">Enter your email and we will send you a link to choose a new one.</p>
 
     <form method="POST" action="{{ route('password.email') }}">
         @csrf
 
-        <!-- Email Address -->
-        <div>
-            <x-input-label for="email" :value="__('Email')" />
-            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autofocus />
-            <x-input-error :messages="$errors->get('email')" class="mt-2" />
-        </div>
+        <x-ui.field name="email" label="Email">
+            <input type="email" id="email" name="email" class="form-control @error('email') is-invalid @enderror" value="{{ old('email') }}" required autofocus>
+        </x-ui.field>
 
-        <div class="flex items-center justify-end mt-4">
-            <x-primary-button>
-                {{ __('Email Password Reset Link') }}
-            </x-primary-button>
-        </div>
+        <button type="submit" class="btn btn-primary btn-block"><i class="mdi mdi-email-send-outline mr-1"></i> Email Password Reset Link</button>
     </form>
-</x-guest-layout>
+
+    <div class="auth-foot">
+        <a href="{{ route('login') }}" class="font-weight-bold"><i class="mdi mdi-arrow-left"></i> Back to log in</a>
+    </div>
+@endsection

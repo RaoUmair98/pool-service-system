@@ -7,7 +7,8 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <meta name="csrf-token" content="{{ csrf_token() }}">
         <!-- App favicon -->
-        <link rel="shortcut icon" href="{{asset('assets/images/favicon.ico')}}">
+        <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
+        <meta name="theme-color" content="#0369a1">
 
 		<!-- App css -->
 		<link href="{{asset('assets/css/bootstrap-corporate.min.css')}}" rel="stylesheet" type="text/css" id="bs-default-stylesheet" />
@@ -37,19 +38,19 @@
                 <div class="logo-box">
                     <a href="{{ route('home') }}" class="logo logo-dark text-center">
                         <span class="logo-sm">
-                            <span class="logo-lg-text-dark">{{ mb_substr(config('app.name'), 0, 1) }}</span>
+                            <span class="logo-lg-text-dark"><span class="brand-icon"><i class="mdi mdi-pool"></i></span></span>
                         </span>
                         <span class="logo-lg">
-                            <span class="logo-lg-text-dark">{{ config('app.name') }}</span>
+                            <span class="logo-lg-text-dark"><span class="brand-icon"><i class="mdi mdi-pool"></i></span>{{ config('app.name') }}</span>
                         </span>
                     </a>
 
                     <a href="{{ route('home') }}" class="logo logo-light text-center">
                         <span class="logo-sm">
-                            <span class="logo-lg-text-light">{{ mb_substr(config('app.name'), 0, 1) }}</span>
+                            <span class="logo-lg-text-light"><span class="brand-icon"><i class="mdi mdi-pool"></i></span></span>
                         </span>
                         <span class="logo-lg">
-                            <span class="logo-lg-text-light">{{ config('app.name') }}</span>
+                            <span class="logo-lg-text-light"><span class="brand-icon"><i class="mdi mdi-pool"></i></span>{{ config('app.name') }}</span>
                         </span>
                     </a>
                 </div>
@@ -190,6 +191,12 @@
                                     <!-- End mobile menu toggle-->
                                 </li>
 
+                                @if (auth()->user()->company)
+                                <li class="d-none d-md-block">
+                                    <span class="topbar-company"><i class="mdi mdi-domain"></i> {{ auth()->user()->company->name }}</span>
+                                </li>
+                                @endif
+
                             </ul>
                             <div class="clearfix"></div>
                         </div>
@@ -210,6 +217,7 @@
                                             'team.' => 'mdi-account-group-outline',
                                             'company.' => 'mdi-domain',
                                             'activity.' => 'mdi-clipboard-text-outline',
+                                            'profile.' => 'mdi-account-circle-outline',
                                         ])->first(fn ($icon, $prefix) => str_starts_with((string) request()->route()?->getName(), $prefix));
                                     @endphp
                                     <h4 class="page-title">@if ($pageIcon)<span class="page-icon"><i class="mdi {{ $pageIcon }}"></i></span>@endif @yield('title', 'Dashboard')</h4>

@@ -1,69 +1,54 @@
-<x-guest-layout>
-    <h2 class="text-lg font-semibold text-gray-800">{{ __('Register your company') }}</h2>
-    <p class="text-sm text-gray-600 mb-4">{{ __('You will be the admin. Add your technicians after signing in.') }}</p>
+@extends('layouts.guest')
+
+@section('title', 'Register your company')
+
+@section('card-class', 'auth-card-wide')
+
+@section('content')
+    <h4 class="mb-1">Register your company</h4>
+    <p class="text-muted mb-3">You will be the admin. Add your technicians after signing in.</p>
 
     <form method="POST" action="{{ route('register') }}">
         @csrf
 
-        <!-- Company Name -->
-        <div>
-            <x-input-label for="company_name" :value="__('Company Name')" />
-            <x-text-input id="company_name" class="block mt-1 w-full" type="text" name="company_name" :value="old('company_name')" required autofocus autocomplete="organization" />
-            <x-input-error :messages="$errors->get('company_name')" class="mt-2" />
+        <div class="form-row">
+            <div class="col-sm-7">
+                <x-ui.field name="company_name" label="Company Name" required icon="mdi-domain">
+                    <input type="text" id="company_name" name="company_name" class="form-control @error('company_name') is-invalid @enderror" value="{{ old('company_name') }}" required autofocus autocomplete="organization">
+                </x-ui.field>
+            </div>
+            <div class="col-sm-5">
+                <x-ui.field name="company_phone" label="Company Phone" icon="mdi-phone-outline">
+                    <input type="tel" id="company_phone" name="company_phone" class="form-control @error('company_phone') is-invalid @enderror" value="{{ old('company_phone') }}" autocomplete="tel">
+                </x-ui.field>
+            </div>
         </div>
 
-        <!-- Company Phone -->
-        <div class="mt-4">
-            <x-input-label for="company_phone" :value="__('Company Phone (optional)')" />
-            <x-text-input id="company_phone" class="block mt-1 w-full" type="tel" name="company_phone" :value="old('company_phone')" autocomplete="tel" />
-            <x-input-error :messages="$errors->get('company_phone')" class="mt-2" />
+        <x-ui.field name="name" label="Your Name" required icon="mdi-account-outline">
+            <input type="text" id="name" name="name" class="form-control @error('name') is-invalid @enderror" value="{{ old('name') }}" required autocomplete="name">
+        </x-ui.field>
+
+        <x-ui.field name="email" label="Email" required hint="You will log in with this email.">
+            <input type="email" id="email" name="email" class="form-control @error('email') is-invalid @enderror" value="{{ old('email') }}" required autocomplete="username">
+        </x-ui.field>
+
+        <div class="form-row">
+            <div class="col-sm-6">
+                <x-ui.field name="password" label="Password" required icon="mdi-lock-outline">
+                    <input type="password" id="password" name="password" class="form-control @error('password') is-invalid @enderror" required autocomplete="new-password">
+                </x-ui.field>
+            </div>
+            <div class="col-sm-6">
+                <x-ui.field name="password_confirmation" label="Confirm Password" required icon="mdi-lock-check">
+                    <input type="password" id="password_confirmation" name="password_confirmation" class="form-control" required autocomplete="new-password">
+                </x-ui.field>
+            </div>
         </div>
 
-        <!-- Name -->
-        <div class="mt-4">
-            <x-input-label for="name" :value="__('Your Name')" />
-            <x-text-input id="name" class="block mt-1 w-full" type="text" name="name" :value="old('name')" required autocomplete="name" />
-            <x-input-error :messages="$errors->get('name')" class="mt-2" />
-        </div>
-
-        <!-- Email Address -->
-        <div class="mt-4">
-            <x-input-label for="email" :value="__('Email')" />
-            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autocomplete="username" />
-            <x-input-error :messages="$errors->get('email')" class="mt-2" />
-        </div>
-
-        <!-- Password -->
-        <div class="mt-4">
-            <x-input-label for="password" :value="__('Password')" />
-
-            <x-text-input id="password" class="block mt-1 w-full"
-                            type="password"
-                            name="password"
-                            required autocomplete="new-password" />
-
-            <x-input-error :messages="$errors->get('password')" class="mt-2" />
-        </div>
-
-        <!-- Confirm Password -->
-        <div class="mt-4">
-            <x-input-label for="password_confirmation" :value="__('Confirm Password')" />
-
-            <x-text-input id="password_confirmation" class="block mt-1 w-full"
-                            type="password"
-                            name="password_confirmation" required autocomplete="new-password" />
-
-            <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
-        </div>
-
-        <div class="flex items-center justify-end mt-4">
-            <a class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" href="{{ route('login') }}">
-                {{ __('Already registered?') }}
-            </a>
-
-            <x-primary-button class="ms-4">
-                {{ __('Create Account') }}
-            </x-primary-button>
-        </div>
+        <button type="submit" class="btn btn-primary btn-block"><i class="mdi mdi-pool mr-1"></i> Create Account</button>
     </form>
-</x-guest-layout>
+
+    <div class="auth-foot">
+        Already registered? <a href="{{ route('login') }}" class="font-weight-bold">Log in</a>
+    </div>
+@endsection
