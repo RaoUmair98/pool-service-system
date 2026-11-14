@@ -142,6 +142,8 @@ class TeamTest extends TestCase
             'name' => 'Crystal Clear Pools',
             'phone' => '555-0199',
             'address' => '1 Main Street',
+            'currency' => 'USD',
+            'timezone' => 'UTC',
         ])->assertRedirect(route('company.edit'));
 
         $this->assertSame('Crystal Clear Pools', $admin->company->fresh()->name);

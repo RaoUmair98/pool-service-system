@@ -20,6 +20,8 @@ class CompanyFactory extends Factory
             'name' => fake()->company().' Pools',
             'email' => fake()->companyEmail(),
             'phone' => fake()->phoneNumber(),
+            'currency' => 'USD',
+            'timezone' => 'UTC',
         ];
     }
 }

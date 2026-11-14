@@ -24,9 +24,9 @@ class ActivityLogController extends Controller
             ->paginate($this->perPage($request, 50))
             ->withQueryString();
 
-        return view('activity.index', [
+        return $this->infiniteOrView($request, 'activity.index', 'activity.rows', [
             'logs' => $logs,
             'users' => User::where('company_id', $companyId)->orderBy('name')->get(['id', 'name']),
-        ]);
+        ], 'logs');
     }
 }

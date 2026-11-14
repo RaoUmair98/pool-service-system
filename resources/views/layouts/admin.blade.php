@@ -22,11 +22,12 @@
 
         <link href="{{ asset('assets/libs/select2/css/select2.min.css') }}" rel="stylesheet" type="text/css" />
         <link href="{{ asset('assets/libs/sweetalert2/sweetalert2.min.css') }}" rel="stylesheet" type="text/css" />
+        <link href="{{ asset('assets/libs/bootstrap-datepicker/css/bootstrap-datepicker.min.css') }}" rel="stylesheet" type="text/css" />
         <link href="{{ asset('assets/css/custom.css') }}?v={{ filemtime(public_path('assets/css/custom.css')) }}" rel="stylesheet" type="text/css" />
         @stack('styles')
     </head>
 
-    <body class="loading" data-layout='{"mode": "light", "width": "fluid", "menuPosition": "fixed", "sidebar": { "color": "dark", "size": "default", "showuser": false}, "topbar": {"color": "light"}, "showRightSidebarOnPageLoad": true}'>
+    <body class="loading @yield('body_class')" data-layout='{"mode": "light", "width": "fluid", "menuPosition": "fixed", "sidebar": { "color": "dark", "size": "default", "showuser": false}, "topbar": {"color": "light"}, "showRightSidebarOnPageLoad": true}'>
 
         <!-- Begin page -->
         <div id="wrapper">
@@ -71,7 +72,177 @@
                                 </a>
                             </li>
 
-                            {{-- Pool service sections (customers, pools, jobs, reports...) are added here as they are built. --}}
+                            @can('complete visits')
+                            <li>
+                                <a href="{{ route('route.index') }}" class="waves-effect">
+                                    <i class="mdi mdi-map-marker-path"></i>
+                                    <span> Today's Route </span>
+                                </a>
+                            </li>
+                            @endcan
+
+                            @canany(['manage customers', 'manage schedules', 'manage invoices'])
+                            <li class="menu-title">Operations</li>
+                            @endcanany
+
+                            @can('manage customers')
+                            <li>
+                                <a href="{{ route('customers.index') }}" class="waves-effect">
+                                    <i class="mdi mdi-account-tie-outline"></i>
+                                    <span> Customers </span>
+                                </a>
+                            </li>
+                            @endcan
+
+                            @can('manage schedules')
+                            <li>
+                                <a href="{{ route('visits.index') }}" class="waves-effect">
+                                    <i class="mdi mdi-calendar-check"></i>
+                                    <span> Visits </span>
+                                </a>
+                            </li>
+                            @endcan
+
+                            @can('manage invoices')
+                            <li>
+                                <a href="{{ route('invoices.index') }}" class="waves-effect">
+                                    <i class="mdi mdi-file-document-outline"></i>
+                                    <span> Invoices </span>
+                                </a>
+                            </li>
+                            @endcan
+
+                            @php
+                                $reportToday = \Illuminate\Support\Carbon::today()->toDateString();
+                                $reportYesterday = \Illuminate\Support\Carbon::yesterday()->toDateString();
+                                $reportWeekFrom = \Illuminate\Support\Carbon::today()->startOfWeek()->toDateString();
+                                $reportWeekTo = \Illuminate\Support\Carbon::today()->endOfWeek()->toDateString();
+                                $reportMonthFrom = \Illuminate\Support\Carbon::today()->startOfMonth()->toDateString();
+                                $reportMonthTo = \Illuminate\Support\Carbon::today()->endOfMonth()->toDateString();
+                                $reportOverdueFrom = \Illuminate\Support\Carbon::today()->subDays(30)->toDateString();
+                                $reportYear = (int) now()->year;
+                                $reportMonth = (int) now()->month;
+                            @endphp
+
+                            @canany(['view reports', 'manage schedules', 'manage invoices', 'view activity log', 'manage customers', 'manage team'])
+                            <li class="menu-title">Reports</li>
+                            @endcanany
+
+                            @can('manage schedules')
+                            <li>
+                                <a href="#sidebarVisitReports" data-toggle="collapse">
+                                    <i class="mdi mdi-calendar-check"></i>
+                                    <span> Visit reports </span>
+                                    <span class="menu-arrow"></span>
+                                </a>
+                                <div class="collapse {{ request()->routeIs('visits.*') ? 'show' : '' }}" id="sidebarVisitReports">
+                                    <ul class="nav-second-level">
+                                        <li><a href="{{ route('visits.index', ['date_from' => $reportToday, 'date_to' => $reportToday]) }}">Today</a></li>
+                                        <li><a href="{{ route('visits.index', ['date_from' => $reportWeekFrom, 'date_to' => $reportWeekTo]) }}">This week</a></li>
+                                        <li><a href="{{ route('visits.index', ['date_from' => $reportMonthFrom, 'date_to' => $reportMonthTo, 'status' => 'completed']) }}">Completed this month</a></li>
+                                        <li><a href="{{ route('visits.index', ['status' => 'in_progress']) }}">In progress</a></li>
+                                        <li><a href="{{ route('visits.index', ['status' => 'skipped']) }}">Skipped</a></li>
+                                        <li><a href="{{ route('visits.index', ['date_from' => $reportOverdueFrom, 'date_to' => $reportYesterday, 'status' => 'scheduled']) }}">Overdue / missed</a></li>
+                                    </ul>
+                                </div>
+                            </li>
+                            @endcan
+
+                            @can('manage invoices')
+                            <li>
+                                <a href="#sidebarInvoiceReports" data-toggle="collapse">
+                                    <i class="mdi mdi-file-chart-outline"></i>
+                                    <span> Invoice reports </span>
+                                    <span class="menu-arrow"></span>
+                                </a>
+                                <div class="collapse {{ request()->routeIs('invoices.*') ? 'show' : '' }}" id="sidebarInvoiceReports">
+                                    <ul class="nav-second-level">
+                                        <li><a href="{{ route('invoices.index', ['status' => 'draft']) }}">Drafts</a></li>
+                                        <li><a href="{{ route('invoices.index', ['status' => 'sent']) }}">Unpaid / sent</a></li>
+                                        <li><a href="{{ route('invoices.index', ['status' => 'paid']) }}">Paid</a></li>
+                                        <li><a href="{{ route('invoices.index', ['period_year' => $reportYear, 'period_month' => $reportMonth]) }}">This month's period</a></li>
+                                        <li><a href="{{ route('invoices.index', ['status' => 'paid', 'period_year' => $reportYear, 'period_month' => $reportMonth]) }}">Paid this period</a></li>
+                                    </ul>
+                                </div>
+                            </li>
+                            @endcan
+
+                            @can('view reports')
+                            <li>
+                                <a href="#sidebarEmailReports" data-toggle="collapse">
+                                    <i class="mdi mdi-email-outline"></i>
+                                    <span> Email reports </span>
+                                    <span class="menu-arrow"></span>
+                                </a>
+                                <div class="collapse {{ request()->routeIs('email-logs.*') || request()->routeIs('visits.report') ? 'show' : '' }}" id="sidebarEmailReports">
+                                    <ul class="nav-second-level">
+                                        <li><a href="{{ route('email-logs.index') }}">All email log</a></li>
+                                        <li><a href="{{ route('email-logs.index', ['type' => 'service_report']) }}">Service reports</a></li>
+                                        <li><a href="{{ route('email-logs.index', ['type' => 'invoice']) }}">Invoice emails</a></li>
+                                        <li><a href="{{ route('email-logs.index', ['status' => 'sent']) }}">Sent</a></li>
+                                        <li><a href="{{ route('email-logs.index', ['status' => 'failed']) }}">Failed</a></li>
+                                        <li><a href="{{ route('email-logs.index', ['status' => 'skipped']) }}">Skipped</a></li>
+                                        <li><a href="{{ route('email-logs.index', ['status' => 'queued']) }}">Queued</a></li>
+                                    </ul>
+                                </div>
+                            </li>
+                            @endcan
+
+                            @can('manage customers')
+                            <li>
+                                <a href="#sidebarCustomerReports" data-toggle="collapse">
+                                    <i class="mdi mdi-account-tie-outline"></i>
+                                    <span> Customer reports </span>
+                                    <span class="menu-arrow"></span>
+                                </a>
+                                <div class="collapse {{ request()->routeIs('customers.*') ? 'show' : '' }}" id="sidebarCustomerReports">
+                                    <ul class="nav-second-level">
+                                        <li><a href="{{ route('customers.index', ['status' => 'active']) }}">Active customers</a></li>
+                                        <li><a href="{{ route('customers.index', ['status' => 'inactive']) }}">Turned off</a></li>
+                                        <li><a href="{{ route('customers.index') }}">All customers</a></li>
+                                    </ul>
+                                </div>
+                            </li>
+                            @endcan
+
+                            @can('manage team')
+                            <li>
+                                <a href="#sidebarTeamReports" data-toggle="collapse">
+                                    <i class="mdi mdi-account-group-outline"></i>
+                                    <span> Team reports </span>
+                                    <span class="menu-arrow"></span>
+                                </a>
+                                <div class="collapse {{ request()->routeIs('team.*') ? 'show' : '' }}" id="sidebarTeamReports">
+                                    <ul class="nav-second-level">
+                                        <li><a href="{{ route('team.index', ['role' => \App\Models\User::ROLE_TECHNICIAN, 'status' => 'active']) }}">Active technicians</a></li>
+                                        <li><a href="{{ route('team.index', ['role' => \App\Models\User::ROLE_ADMIN]) }}">Admins</a></li>
+                                        <li><a href="{{ route('team.index', ['status' => 'inactive']) }}">Turned off</a></li>
+                                        <li><a href="{{ route('team.index') }}">Full team</a></li>
+                                    </ul>
+                                </div>
+                            </li>
+                            @endcan
+
+                            @can('view activity log')
+                            <li>
+                                <a href="#sidebarActivityReports" data-toggle="collapse">
+                                    <i class="mdi mdi-clipboard-text-outline"></i>
+                                    <span> Activity reports </span>
+                                    <span class="menu-arrow"></span>
+                                </a>
+                                <div class="collapse {{ request()->routeIs('activity.*') ? 'show' : '' }}" id="sidebarActivityReports">
+                                    <ul class="nav-second-level">
+                                        <li><a href="{{ route('activity.index', ['date_from' => $reportToday, 'date_to' => $reportToday]) }}">Today</a></li>
+                                        <li><a href="{{ route('activity.index', ['date_from' => $reportWeekFrom, 'date_to' => $reportWeekTo]) }}">This week</a></li>
+                                        <li><a href="{{ route('activity.index', ['action' => 'created']) }}">Created</a></li>
+                                        <li><a href="{{ route('activity.index', ['action' => 'updated']) }}">Updated</a></li>
+                                        <li><a href="{{ route('activity.index', ['action' => 'deleted']) }}">Deleted</a></li>
+                                        <li><a href="{{ route('activity.index', ['action' => 'login']) }}">Logins</a></li>
+                                        <li><a href="{{ route('activity.index') }}">Full activity log</a></li>
+                                    </ul>
+                                </div>
+                            </li>
+                            @endcan
 
                             @canany(['manage team', 'manage company'])
                             <li class="menu-title">Company</li>
@@ -91,15 +262,6 @@
                                 <a href="{{ route('company.edit') }}" class="waves-effect">
                                     <i class="mdi mdi-domain"></i>
                                     <span> Company Settings </span>
-                                </a>
-                            </li>
-                            @endcan
-
-                            @can('view activity log')
-                            <li>
-                                <a href="{{ route('activity.index') }}" class="waves-effect">
-                                    <i class="mdi mdi-clipboard-text-outline"></i>
-                                    <span> Activity Log </span>
                                 </a>
                             </li>
                             @endcan
@@ -214,6 +376,14 @@
                                         // Page icon follows the section of the app the current route belongs to.
                                         $pageIcon = collect([
                                             'dashboard' => 'mdi-view-dashboard-outline',
+                                            'route.' => 'mdi-map-marker-path',
+                                            'customers.pools.' => 'mdi-pool',
+                                            'pools.schedule.' => 'mdi-calendar-clock',
+                                            'pools.' => 'mdi-pool',
+                                            'visits.' => 'mdi-calendar-check',
+                                            'email-logs.' => 'mdi-email-outline',
+                                            'invoices.' => 'mdi-file-document-outline',
+                                            'customers.' => 'mdi-account-tie-outline',
                                             'team.' => 'mdi-account-group-outline',
                                             'company.' => 'mdi-domain',
                                             'activity.' => 'mdi-clipboard-text-outline',
@@ -230,12 +400,6 @@
                         <!-- end page title -->
 
                         @include('partials.toasts')
-
-                        @hasSection('help')
-                            <div class="alert help-box d-print-none">
-                                <i class="mdi mdi-lightbulb-on-outline mr-1"></i> @yield('help')
-                            </div>
-                        @endif
 
                         @yield('content')
 
@@ -271,6 +435,7 @@
         <script src="{{asset('assets/js/vendor.min.js')}}"></script>
         <script src="{{ asset('assets/libs/select2/js/select2.min.js') }}"></script>
         <script src="{{ asset('assets/libs/sweetalert2/sweetalert2.min.js') }}"></script>
+        <script src="{{ asset('assets/libs/bootstrap-datepicker/js/bootstrap-datepicker.min.js') }}"></script>
 
         <script>
             // Dependent dropdowns: <select data-parent="#customer_id" data-url="..."> reloads
@@ -319,6 +484,7 @@
 
                     $(this).select2({
                         width: '100%',
+                        dropdownParent: $(document.body),
                         minimumResultsForSearch: 0,
                         templateResult: withIcon,
                         templateSelection: withIcon,
@@ -347,8 +513,66 @@
                     }
                 });
 
-                // Friendly "are you sure?" box instead of the browser's plain one.
-                $('form[data-confirm]').on('submit', function (event) {
+                function pad2(n) { return String(n).padStart(2, '0'); }
+                function toIso(date) {
+                    return date.getFullYear() + '-' + pad2(date.getMonth() + 1) + '-' + pad2(date.getDate());
+                }
+
+                // Calendar date pickers — display MM/DD/YYYY, submit Y-m-d for the server.
+                $('[data-datepicker]').each(function () {
+                    var $input = $(this);
+                    var $iso = $('#' + $input.data('iso-target'));
+                    var $filterForm = $input.closest('form.filters-bar');
+
+                    $input.datepicker({
+                        format: 'mm/dd/yyyy',
+                        autoclose: true,
+                        todayHighlight: true,
+                        clearBtn: true,
+                        assumeNearbyYear: true,
+                        orientation: 'bottom auto',
+                        container: 'body'
+                    }).on('changeDate', function (e) {
+                        $iso.val(e.date ? toIso(e.date) : '');
+                        if ($filterForm.length) { $filterForm[0].submit(); }
+                    }).on('clearDate', function () {
+                        $iso.val('');
+                        if ($filterForm.length) { $filterForm[0].submit(); }
+                    }).on('change', function () {
+                        // Typed values: keep hidden ISO in sync when possible.
+                        var raw = $.trim($input.val());
+                        if (!raw) {
+                            $iso.val('');
+                            return;
+                        }
+                        var parsed = $input.datepicker('getDate');
+                        $iso.val(parsed ? toIso(parsed) : $iso.val());
+                    });
+                });
+
+                // List filters apply themselves — no Filter button needed.
+                $('form.filters-bar').each(function () {
+                    var $form = $(this);
+                    var timer = null;
+                    var ready = false;
+
+                    function applyFilters() {
+                        if (!ready) { return; }
+                        $form[0].submit();
+                    }
+
+                    $form.on('change', 'select', applyFilters);
+                    $form.on('input', 'input[type="text"]:not([data-datepicker]), input[type="search"], input[type="number"]', function () {
+                        clearTimeout(timer);
+                        timer = setTimeout(applyFilters, 400);
+                    });
+
+                    // Ignore Select2/datepicker setup noise on first paint.
+                    setTimeout(function () { ready = true; }, 150);
+                });
+
+                // Friendly "are you sure?" box (delegated so infinite-scroll rows work too).
+                $(document).on('submit', 'form[data-confirm]', function (event) {
                     var form = this;
 
                     event.preventDefault();
@@ -409,6 +633,8 @@
                 });
             });
         </script>
+
+        <script src="{{ asset('assets/js/infinite-scroll.js') }}?v={{ filemtime(public_path('assets/js/infinite-scroll.js')) }}"></script>
 
         @stack('scripts')
 

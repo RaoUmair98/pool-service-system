@@ -1,7 +1,7 @@
 <div class="card">
     <div class="card-body">
         <h4 class="header-title mb-1"><i class="mdi mdi-lock-outline"></i> Change Password</h4>
-        <p class="text-muted mb-3">Use a long password that is hard to guess.</p>
+        <p class="text-muted mb-2">Use a long password that is hard to guess.</p>
 
         @if (session('status') === 'password-updated')
             <div class="alert alert-success"><i class="mdi mdi-check-circle-outline mr-1"></i> Password changed.</div>

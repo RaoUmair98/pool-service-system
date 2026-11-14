@@ -1,7 +1,7 @@
 <div class="card">
     <div class="card-body">
         <h4 class="header-title danger mb-1"><i class="mdi mdi-account-remove-outline"></i> Delete Account</h4>
-        <p class="text-muted mb-3">Your account is removed for good and you can no longer log in. Enter your password to confirm.</p>
+        <p class="text-muted mb-2">Your account is removed for good and you can no longer log in. Enter your password to confirm.</p>
 
         <form method="post" action="{{ route('profile.destroy') }}" data-confirm="Your account will be deleted for ever.">
             @csrf

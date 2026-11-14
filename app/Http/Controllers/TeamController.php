@@ -30,7 +30,7 @@ class TeamController extends Controller
             ->paginate($this->perPage($request, 20))
             ->withQueryString();
 
-        return view('team.index', compact('members'));
+        return $this->infiniteOrView($request, 'team.index', 'team.rows', compact('members'), 'members');
     }
 
     public function create(Request $request)
@@ -111,14 +111,6 @@ class TeamController extends Controller
         $member->delete();
 
         return back()->with('success', "$member->name deleted.");
-    }
-
-    /**
-     * Another company's people do not exist as far as this admin is concerned.
-     */
-    protected function ensureSameCompany(Request $request, User $member): void
-    {
-        abort_unless($member->company_id === $request->user()->company_id, 404);
     }
 
     protected function validated(Request $request, ?User $member = null): array

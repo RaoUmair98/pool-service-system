@@ -20,8 +20,18 @@ class RolesAndPermissionsSeeder extends Seeder
             'manage company',
             'manage team',
             'view activity log',
+            'manage customers',
+            'manage pools',
+            'manage schedules',
+            'view visits',
+            'manage invoices',
+            'view reports',
+            'view dashboard',
         ],
-        User::ROLE_TECHNICIAN => [],
+        User::ROLE_TECHNICIAN => [
+            'view visits',
+            'complete visits',
+        ],
     ];
 
     public function run()

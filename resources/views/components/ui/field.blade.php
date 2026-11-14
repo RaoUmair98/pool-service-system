@@ -1,4 +1,4 @@
-@props(['name', 'label', 'required' => false, 'hint' => null, 'icon' => null])
+@props(['name', 'label', 'required' => false, 'hint' => null, 'icon' => null, 'class' => null])
 
 @php
     // One icon per kind of field, so the same thing looks the same on every form.
@@ -13,11 +13,11 @@
     ][$name] ?? null;
 @endphp
 
-<div class="form-group">
-    <label for="{{ $name }}">@if ($icon)<i class="mdi {{ $icon }}"></i> @endif{{ $label }} @if ($required)<span class="text-danger">*</span>@endif</label>
+<div {{ $attributes->class(['form-group', 'mb-2', $class]) }}>
+    <label for="{{ $name }}" class="mb-1">@if ($icon)<i class="mdi {{ $icon }}"></i> @endif{{ $label }} @if ($required)<span class="text-danger">*</span>@endif</label>
     {{ $slot }}
     @if ($hint)
-        <small class="form-text text-muted">{{ $hint }}</small>
+        <small class="form-text text-muted mt-0">{{ $hint }}</small>
     @endif
     @error($name)
         <div class="text-danger small mt-1"><i class="mdi mdi-alert-circle-outline"></i> {{ $message }}</div>

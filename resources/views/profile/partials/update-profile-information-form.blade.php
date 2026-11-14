@@ -1,7 +1,7 @@
 <div class="card">
     <div class="card-body">
         <h4 class="header-title mb-1"><i class="mdi mdi-account-circle-outline"></i> Profile Information</h4>
-        <p class="text-muted mb-3">Your name and the email you log in with.</p>
+        <p class="text-muted mb-2">Your name and the email you log in with.</p>
 
         <form id="send-verification" method="post" action="{{ route('verification.send') }}">
             @csrf
